@@ -1,0 +1,176 @@
+#define GL_SILENCE_DEPRECATION
+#include <GLUT/glut.h>
+#include <cmath>
+
+
+const int NUM_PLANETS = 9;
+const float PI = 3.14159265359;
+
+struct Planet {
+    float radius;
+    float distance;
+    float speed;
+    float angle;
+    float color[3];
+};
+void drawCircle(float distance)
+{
+    glColor3f(1.0, 1.0, 1.0); // Set color to red
+    glLineWidth(0.001); // Set line width to 2
+
+    glBegin(GL_LINE_LOOP);
+
+    // Calculate and draw circle vertices
+    for (int i = 0; i <= 360; i++)
+    {
+        float angle = i * M_PI / 180.0; // Convert degrees to radians
+        float x = distance * cos(angle);
+        float y = distance * sin(angle);
+        glVertex2f(x, y);
+    }
+
+    glEnd();
+   
+}
+
+Planet planets[NUM_PLANETS];
+
+void initPlanets() {
+    //sun
+    planets[0].radius = 0.1;
+    planets[0].distance = 0;
+    planets[0].speed = 0;
+    planets[0].angle = 0;
+    planets[0].color[0] = 1;
+    planets[0].color[1] = 1;
+    planets[0].color[2] = 0;
+    // mercury
+    planets[1].radius = 0.0098;
+    planets[1].distance = 0.19;
+    planets[1].speed = 5;
+    planets[1].angle = 0;
+    planets[1].color[0] = 0.5;
+    planets[1].color[1] = 0.5;
+    planets[1].color[2] = 0.5;
+  
+    // venus
+    planets[2].radius = 0.014;
+    planets[2].distance = 0.25;
+    planets[2].speed = 2;
+    planets[2].angle = 0;
+    planets[2].color[0] = 0.6;
+    planets[2].color[1] = 0.4;
+    planets[2].color[2] = 0.2;
+
+     // earth
+    planets[3].radius = 0.016;
+    planets[3].distance = 0.3;
+    planets[3].speed = 1.25;
+    planets[3].angle = 0;
+    planets[3].color[0] = 0.5;
+    planets[3].color[1] = 0.5;
+    planets[3].color[2] = 1;
+
+    // mars
+    planets[8].radius = 0.010;
+    planets[8].distance = 0.35;
+    planets[8].speed = 0.65;
+    planets[8].angle = 0;
+    planets[8].color[0] = 0.8;
+    planets[8].color[1] = 0.6;
+    planets[8].color[2] = 0.4;
+
+    // jupiter
+    planets[4].radius = 0.046;
+    planets[4].distance = 0.64;
+    planets[4].speed = 0.105;
+    planets[4].angle = 0;
+    planets[4].color[0] = 1;
+    planets[4].color[1] = 0.5;
+    planets[4].color[2] = 0;
+
+    // saturn
+    planets[5].radius = 0.032;
+    planets[5].distance = 0.72;
+    planets[5].speed = 0.084;
+    planets[5].angle = 0;
+    planets[5].color[0] = 0.5;
+    planets[5].color[1] = 0.5;
+    planets[5].color[2] = 0.6;
+
+    // uranus
+    planets[6].radius = 0.03;
+    planets[6].distance = 0.83;
+    planets[6].speed = 0.01485;
+    planets[6].angle = 0;
+    planets[6].color[0] = 0;
+    planets[6].color[1] = 0.6;
+    planets[6].color[2] = 0.4;
+    
+    // neptune
+    planets[7].radius = 0.029;
+    planets[7].distance = 0.99;
+    planets[7].speed = 0.007585;
+    planets[7].angle = 0;
+    planets[7].color[0] = 0;
+    planets[7].color[1] = 0.1;
+    planets[7].color[2] = 1;
+
+}
+
+void drawPlanet(Planet p) {
+    glColor3f(p.color[0], p.color[1], p.color[2]);
+    glPushMatrix();
+    glRotatef(p.angle, 0.0, 0.0, 1.0);
+    glTranslatef(p.distance, 0.0, 0.0);
+    glutSolidSphere(p.radius, 200, 20);
+    
+
+    
+    glPopMatrix();
+}
+
+void display() {
+    
+    glClear(GL_COLOR_BUFFER_BIT);
+    drawCircle(planets[1].distance);
+    drawCircle(planets[2].distance);
+    drawCircle(planets[3].distance);
+    drawCircle(planets[4].distance);
+    drawCircle(planets[5].distance);
+    drawCircle(planets[6].distance);
+    drawCircle(planets[7].distance);
+    drawCircle(planets[8].distance);
+    for (int i = 0; i < NUM_PLANETS; i++) {
+        drawPlanet(planets[i]);
+        planets[i].angle += planets[i].speed;
+    }
+    
+    glutSwapBuffers();
+}
+
+void reshape(int w, int h) {
+    glViewport(0, 0, w, h);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(-1.0, 1.0, -1.0, 1.0);
+    glMatrixMode(GL_MODELVIEW);
+}
+
+void timer(int value) {
+    glutPostRedisplay();
+    glutTimerFunc(16, timer, 0);
+}
+
+int main(int argc, char** argv) {
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
+    glutInitWindowSize(800, 800);
+    glutCreateWindow("Solar System");
+    initPlanets();
+    glutDisplayFunc(display);
+    glutReshapeFunc(reshape);
+    glutTimerFunc(0, timer, 0);
+    glutMainLoop();
+    return 0;
+}
